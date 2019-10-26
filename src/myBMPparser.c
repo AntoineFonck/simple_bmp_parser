@@ -7,82 +7,82 @@ int     fill_bmp_header(t_bmp_header *bmp_header, int fd, char *file, int *offse
 
     if ((ret = read(fd, &bmp_header->type, 2)) == -1)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "read fail: %{r}s\n", strerror(errno));
+        ft_dprintf(STDERR_FILENO, "read fail: %{r}s\n", strerror(errno));
         return (EXIT_FAILURE);
     }
     else if (ret == 0)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "unexpected end of file in %{r}s\n", file);
+        ft_dprintf(STDERR_FILENO, "unexpected end of file in %{r}s\n", file);
         return (EXIT_FAILURE);
     }
     *offset += ret;
     if (bmp_header->type != 0x4d42) //424d in little endian --> first byte (42=B) is the smallest, second byte is bigger ((4d=M) * 256)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "file ID is %{r}d, it should be %{g}d\n", bmp_header->type, ('M' * 256) + 'B');
+        ft_dprintf(STDERR_FILENO, "file ID is %{r}d, it should be %{g}d\n", bmp_header->type, ('M' * 256) + 'B');
         return (EXIT_FAILURE);
     }
     if ((ret = read(fd, &bmp_header->size, 4)) == -1)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "read fail: %{r}s\n", strerror(errno));
+        ft_dprintf(STDERR_FILENO, "read fail: %{r}s\n", strerror(errno));
         return (EXIT_FAILURE);
     }
     else if (ret == 0)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "unexpected end of file in %{r}s\n", file);
+        ft_dprintf(STDERR_FILENO, "unexpected end of file in %{r}s\n", file);
         return (EXIT_FAILURE);
     }
     *offset += ret;
     if (bmp_header->size <= 0)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "size declared in header is %{r}d, error with file format\n", bmp_header->size);
+        ft_dprintf(STDERR_FILENO, "size declared in header is %{r}d, error with file format\n", bmp_header->size);
         return (EXIT_FAILURE);
     }
     if ((ret = read(fd, &bmp_header->reserved1, 2)) == -1)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "read fail: %{r}s\n", strerror(errno));
+        ft_dprintf(STDERR_FILENO, "read fail: %{r}s\n", strerror(errno));
         return (EXIT_FAILURE);
     }
     else if (ret == 0)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "unexpected end of file in %{r}s\n", file);
+        ft_dprintf(STDERR_FILENO, "unexpected end of file in %{r}s\n", file);
         return (EXIT_FAILURE);
     }
     *offset += ret;
     if (bmp_header->reserved1 != 0)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "the two bytes at offset %d should be 0, but are %{r}d\n", offset, bmp_header->reserved1);
+        ft_dprintf(STDERR_FILENO, "the two bytes at offset %d should be 0, but are %{r}d\n", offset, bmp_header->reserved1);
         return (EXIT_FAILURE);
     }
     if ((ret = read(fd, &bmp_header->reserved2, 2)) == -1)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "read fail: %{r}s\n", strerror(errno));
+        ft_dprintf(STDERR_FILENO, "read fail: %{r}s\n", strerror(errno));
         return (EXIT_FAILURE);
     }
     else if (ret == 0)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "unexpected end of file in %{r}s\n", file);
+        ft_dprintf(STDERR_FILENO, "unexpected end of file in %{r}s\n", file);
         return (EXIT_FAILURE);
     }
     *offset += ret;
     if (bmp_header->reserved2 != 0)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "the two bytes at offset %d should be 0, but are %{r}d\n", offset, bmp_header->reserved2);
+        ft_dprintf(STDERR_FILENO, "the two bytes at offset %d should be 0, but are %{r}d\n", offset, bmp_header->reserved2);
         return (EXIT_FAILURE);
     }
     if ((ret = read(fd, &bmp_header->offset, 4)) == -1)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "read fail: %{r}s\n", strerror(errno));
+        ft_dprintf(STDERR_FILENO, "read fail: %{r}s\n", strerror(errno));
         return (EXIT_FAILURE);
     }
     else if (ret == 0)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "unexpected end of file in %{r}s\n", file);
+        ft_dprintf(STDERR_FILENO, "unexpected end of file in %{r}s\n", file);
         return (EXIT_FAILURE);
     }
     *offset += ret;
     if (bmp_header->offset != OFFSET_BEFORE_DATA)//54)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "the offset to the image data %d at index %d seems incorrect\n", bmp_header->offset, *offset);
+        ft_dprintf(STDERR_FILENO, "the offset to the image data %d at index %d seems incorrect\n", bmp_header->offset, *offset);
         return (EXIT_FAILURE);
     }
     return (EXIT_SUCCESS);
@@ -94,65 +94,65 @@ int     fill_info_header(t_info_header *info_header, int fd, char *file, int *of
 
     if ((ret = read(fd, info_header, sizeof(t_info_header))) == -1)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "read fail: %{r}s\n", strerror(errno));
+        ft_dprintf(STDERR_FILENO, "read fail: %{r}s\n", strerror(errno));
         return (EXIT_FAILURE);
     }
     else if (ret == 0)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "unexpected end of file in %{r}s\n", file);
+        ft_dprintf(STDERR_FILENO, "unexpected end of file in %{r}s\n", file);
         return (EXIT_FAILURE);
     }
     *offset += sizeof(t_info_header);
     if (info_header->size != 40)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "format error: size of info header is declared %d, should be 40\n", info_header->size);
+        ft_dprintf(STDERR_FILENO, "format error: size of info header is declared %d, should be 40\n", info_header->size);
         return (EXIT_FAILURE);
     }
     //if (info_header->width <= 0 || info_header->height <= 0) //128 * 128 ?
     if (info_header->width != PIX_WIDTH || info_header->height != PIX_HEIGHT) //128 * 128 ?
     {
-        ft_dprintf_bmp(STDERR_FILENO, "width and/or height in header (%d x %d) are wrong\n", info_header->width, info_header->height);
+        ft_dprintf(STDERR_FILENO, "width and/or height in header (%d x %d) are wrong\n", info_header->width, info_header->height);
         return (EXIT_FAILURE);
     }
     if (info_header->planes != 1)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "format error, color planes in header = %d\n", info_header->planes);
+        ft_dprintf(STDERR_FILENO, "format error, color planes in header = %d\n", info_header->planes);
         return (EXIT_FAILURE);
     }
     //if (info_header->bits != 24) //&& info_header->bits != 8) //only accept 24 bit bmp ?
     if (info_header->bits != BITS_PER_PIX) //&& info_header->bits != 8) //only accept 24 bit bmp ?
     {
-        ft_dprintf_bmp(STDERR_FILENO, "nb of bits per pixel is %d, only 24 is accepted\n", info_header->bits);
+        ft_dprintf(STDERR_FILENO, "nb of bits per pixel is %d, only 24 is accepted\n", info_header->bits);
         return (EXIT_FAILURE);
     }
     if (info_header->compression != 0)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "%{r}s is a compressed file, only uncompressed bmp are handled\n", file);
+        ft_dprintf(STDERR_FILENO, "%{r}s is a compressed file, only uncompressed bmp are handled\n", file);
         return (EXIT_FAILURE);
     }
     if (info_header->imagesize <= 0)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "uncorrect image size: %{r}d\n", info_header->imagesize);
+        ft_dprintf(STDERR_FILENO, "uncorrect image size: %{r}d\n", info_header->imagesize);
         return (EXIT_FAILURE);
     }
     if (info_header->xresolution <= 0)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "uncorrect horizontal resolution: %{r}d pixels per meter\n", info_header->xresolution);
+        ft_dprintf(STDERR_FILENO, "uncorrect horizontal resolution: %{r}d pixels per meter\n", info_header->xresolution);
         return (EXIT_FAILURE);
     }
     if (info_header->yresolution <= 0)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "uncorrect vertical resolution: %{r}d pixels per meter\n", info_header->yresolution);
+        ft_dprintf(STDERR_FILENO, "uncorrect vertical resolution: %{r}d pixels per meter\n", info_header->yresolution);
         return (EXIT_FAILURE);
     }
     if (info_header->ncolours < 0)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "uncorrect number of colors in image: %{r}d\n", info_header->ncolours);
+        ft_dprintf(STDERR_FILENO, "uncorrect number of colors in image: %{r}d\n", info_header->ncolours);
         return (EXIT_FAILURE);
     }
     if (info_header->importantcolours < 0)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "uncorrect number of important colors: %{r}d\n", info_header->importantcolours);
+        ft_dprintf(STDERR_FILENO, "uncorrect number of important colors: %{r}d\n", info_header->importantcolours);
         return (EXIT_FAILURE);
     }
     return (EXIT_SUCCESS);
@@ -186,12 +186,12 @@ int     read_pixel(int fd, int *pixel, int index)
     //if ((ret = read(fd, pixel, 4)) == -1)
     if ((ret = read(fd, pixel, 3)) == -1)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "read fail: %{r}s\n", strerror(errno));
+        ft_dprintf(STDERR_FILENO, "read fail: %{r}s\n", strerror(errno));
         return (EXIT_FAILURE);
     }
     else if (ret == 0)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "unexpected end of file while reading at index %d\n", index);
+        ft_dprintf(STDERR_FILENO, "unexpected end of file while reading at index %d\n", index);
         return (EXIT_FAILURE);
     }
     //printf("index = %d\n", index);
@@ -223,22 +223,22 @@ int     simpleparse_BMP(char *file, int *pixels)
     offset = 0;
     if ((is_bmp(file)) != 1)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "%{r}s is not a valid bmp file\n", file);
+        ft_dprintf(STDERR_FILENO, "%{r}s is not a valid bmp file\n", file);
         return (EXIT_FAILURE);
     }
     if ((fd = open(file, O_RDONLY | O_NOFOLLOW)) == -1)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "failed to open %{r}s: %{r}s\n", file, strerror(errno));
+        ft_dprintf(STDERR_FILENO, "failed to open %{r}s: %{r}s\n", file, strerror(errno));
         return (EXIT_FAILURE);
     }
     if ((fill_bmp_header(&bmp_header, fd, file, &offset)) != EXIT_SUCCESS)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "error while reading bmp header of %{r}s\n", file);
+        ft_dprintf(STDERR_FILENO, "error while reading bmp header of %{r}s\n", file);
         return (EXIT_FAILURE);
     }
     if ((fill_info_header(&info_header, fd, file, &offset)) != EXIT_SUCCESS)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "error while reading info header of %{r}s\n", file);
+        ft_dprintf(STDERR_FILENO, "error while reading info header of %{r}s\n", file);
         return (EXIT_FAILURE);
     }
     fill_pixels(fd, pixels);
@@ -254,22 +254,22 @@ int     parse_BMP(char *file, t_bmp_header *bmp_header, t_info_header *info_head
     //pixels = NULL;
     if ((is_bmp(file)) != 1)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "%{r}s is not a valid bmp file\n", file);
+        ft_dprintf(STDERR_FILENO, "%{r}s is not a valid bmp file\n", file);
         return (EXIT_FAILURE);
     }
     if ((fd = open(file, O_RDONLY | O_NOFOLLOW)) == -1)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "failed to open %{r}s: %{r}s\n", file, strerror(errno));
+        ft_dprintf(STDERR_FILENO, "failed to open %{r}s: %{r}s\n", file, strerror(errno));
         return (EXIT_FAILURE);
     }
     if ((fill_bmp_header(bmp_header, fd, file, &offset)) != EXIT_SUCCESS)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "error while reading bmp header of %{r}s\n", file);
+        ft_dprintf(STDERR_FILENO, "error while reading bmp header of %{r}s\n", file);
         return (EXIT_FAILURE);
     }
     if ((fill_info_header(info_header, fd, file, &offset)) != EXIT_SUCCESS)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "error while reading info header of %{r}s\n", file);
+        ft_dprintf(STDERR_FILENO, "error while reading info header of %{r}s\n", file);
         return (EXIT_FAILURE);
     }
     //if ((pixels = (int *)malloc(sizeof(char) * (info_header->width * info_header->height * (info_header->bits / 3)))) == NULL)
@@ -288,22 +288,22 @@ int     *parse_BMP_malloc(char *file, t_bmp_header *bmp_header, t_info_header *i
     pixels = NULL;
     if ((is_bmp(file)) != 1)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "%{r}s is not a valid bmp file\n", file);
+        ft_dprintf(STDERR_FILENO, "%{r}s is not a valid bmp file\n", file);
         return (NULL);
     }
     if ((fd = open(file, O_RDONLY | O_NOFOLLOW)) == -1)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "failed to open %{r}s: %{r}s\n", file, strerror(errno));
+        ft_dprintf(STDERR_FILENO, "failed to open %{r}s: %{r}s\n", file, strerror(errno));
         return (NULL);
     }
     if ((fill_bmp_header(bmp_header, fd, file, &offset)) != EXIT_SUCCESS)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "error while reading bmp header of %{r}s\n", file);
+        ft_dprintf(STDERR_FILENO, "error while reading bmp header of %{r}s\n", file);
         return (NULL);
     }
     if ((fill_info_header(info_header, fd, file, &offset)) != EXIT_SUCCESS)
     {
-        ft_dprintf_bmp(STDERR_FILENO, "error while reading info header of %{r}s\n", file);
+        ft_dprintf(STDERR_FILENO, "error while reading info header of %{r}s\n", file);
         return (NULL);
     }
     if ((pixels = (int *)malloc(sizeof(char) * (info_header->width * info_header->height * (info_header->bits / 3)))) == NULL)

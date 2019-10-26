@@ -6,7 +6,7 @@
 #    By: afonck <afonck@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/11/07 18:55:30 by afonck            #+#    #+#              #
-#    Updated: 2019/10/26 15:06:09 by afonck           ###   ########.fr        #
+#    Updated: 2019/10/26 17:35:48 by afonck           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -52,12 +52,14 @@ $(OBJ_DIR):
 	@echo "$(NAME): $(OBJ_DIR) created"
 
 $(OBJ_DIR)%.o : $(SRC_DIR)%.c $(BMP_HEADERS)
-	@$(CC) $(CFLAGS) -c $(INCLUDES) $< $(LDFLAGS) $(LDLIBS) -o $@
+	@$(CC) $(CFLAGS) -c $(INCLUDES) $< -o $@
 
 clean:
 	@rm -rf $(OBJ_DIR)
+	@echo "$(OBJ_DIR) deleted"
 
 fclean: clean
 	@rm -f $(NAME)
+	@echo "$(NAME) deleted"
 
 re: fclean all

@@ -40,4 +40,6 @@ int                     ft_dprintf_bmp(int fd, const char *fmt, ...);
 
 int     parse_BMP(char *file, t_bmp_header *bmp_header, t_info_header *info_header, int *pixels);
 
+int	simpleparse_BMP(char *file, int *pixels);
+
 #endif
