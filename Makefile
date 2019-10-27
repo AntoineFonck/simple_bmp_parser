@@ -6,7 +6,7 @@
 #    By: afonck <afonck@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/11/07 18:55:30 by afonck            #+#    #+#              #
-#    Updated: 2019/10/26 17:35:48 by afonck           ###   ########.fr        #
+#    Updated: 2019/10/27 02:27:17 by afonck           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,8 +30,11 @@ INC_DIR = ./includes/
 OBJ_DIR = ./obj/
 OBJ_LIST = $(SRC_LIST:.c=.o)
 
-SRC_LIST = myBMPparser.c
-HEADER_LIST = myBMPparser.h
+SRC_LIST = parse_bmp.c \
+			parse_bmp_header.c \
+			error_bmp.c \
+			utils.c
+HEADER_LIST = libbmp.h
 
 BMP_SRC = $(addprefix $(SRC_DIR), $(SRC_LIST))
 BMP_OBJ = $(addprefix $(OBJ_DIR), $(OBJ_LIST))
