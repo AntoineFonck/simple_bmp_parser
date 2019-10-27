@@ -6,13 +6,13 @@
 #    By: afonck <afonck@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/11/07 18:55:30 by afonck            #+#    #+#              #
-#    Updated: 2019/10/27 02:27:17 by afonck           ###   ########.fr        #
+#    Updated: 2019/10/27 12:41:04 by afonck           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		= libbmp.a
 
-CC = clang
+CC = clang#gcc
 
 CFLAGS	= -Wall -Werror -Wextra
 
@@ -21,7 +21,9 @@ LDLIBS = -lft
 
 INCLUDES = -I$(LIBFT_DIR) -I$(INC_DIR)
 
-LIBFT_DIR = ../libft/
+CURRENT_DIR = $(shell pwd)
+
+LIBFT_DIR = $(CURRENT_DIR)/../libft/
 LIBFT = $(LIBFT_DIR)libft.a
 #LIBFT_HEADER = $(LIBFT_DIR)libft.h
 
