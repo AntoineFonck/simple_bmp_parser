@@ -3,7 +3,7 @@
 
 # define PIX_WIDTH 128
 # define PIX_HEIGHT 128
-# define BITS_PER_PIX 24
+# define BITS_PER_PIX 32//24
 
 # define BMP_ID ('M' * 256) + 'B'
 # define OFFSET_BEFORE_DATA 54

@@ -50,7 +50,7 @@ static int  check_info_header(t_info_header *info_header)
         return(info_header_error("info header size: %{r}d, expected: 40\n", info_header->size));
     if (info_header->width != PIX_WIDTH) //128 * 128 ?
         return(info_header_error("width in header: %{r}d is wrong\n", info_header->width));
-    if (info_header->height != PIX_HEIGHT) //128 * 128 ?
+    if (ft_absolute(info_header->height) != PIX_HEIGHT) //128 * 128 ?
         return(info_header_error("height in header %{r}d is wrong\n", info_header->height));
     if (info_header->planes != 1)
         return(info_header_error("format error, color planes: %d\n", info_header->planes));
@@ -58,7 +58,7 @@ static int  check_info_header(t_info_header *info_header)
         return(info_header_error("nb bits per pixel: %d, only 24 accepted\n", info_header->bits));
     if (info_header->compression != 0)
         return(info_header_error("compression: %{r}d, only uncompressed bmp are handled\n", info_header->compression));
-    if (info_header->imagesize != IMG_SIZE)
+    if (info_header->imagesize < 0)//!= IMG_SIZE)
         return(info_header_error("uncorrect image size: %{r}d\n", info_header->imagesize));
     if (info_header->xresolution <= 0)
         return(info_header_error("wrong horizontal res: %{r}d \n", info_header->xresolution));
