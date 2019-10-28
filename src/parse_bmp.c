@@ -6,7 +6,7 @@
 /*   By: afonck <afonck@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/28 15:26:27 by afonck            #+#    #+#             */
-/*   Updated: 2019/10/28 16:30:31 by afonck           ###   ########.fr       */
+/*   Updated: 2019/10/28 17:43:36 by afonck           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,8 @@
 
 static int	read_pixel(int fd, int *pixel, int index)
 {
-	int ret;
+	int		ret;
+	unsigned char	tmp;
 
 	if ((ret = read(fd, pixel, BYTES_PER_PIX)) == -1)
 	{
@@ -28,6 +29,9 @@ static int	read_pixel(int fd, int *pixel, int index)
 		ft_dprintf(STDERR_FILENO, ERRBMP_EOF, index);
 		return (EXIT_FAILURE);
 	}
+	tmp = pixel[0];
+	pixel[0] = pixel[2];
+	pixel[2] = tmp;
 	return (EXIT_SUCCESS);
 }
 
