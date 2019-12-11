@@ -6,7 +6,7 @@
 /*   By: afonck <afonck@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/28 15:26:06 by afonck            #+#    #+#             */
-/*   Updated: 2019/10/28 18:32:54 by afonck           ###   ########.fr       */
+/*   Updated: 2019/12/11 17:22:15 by afonck           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,8 @@ int *offset)
 	*offset += ret;
 	if ((ret = read(fd, &bmp_header->size, 4)) <= 0)
 		return (bmpheader_readerror(ret, file));
-	if (bmp_header->size != BMP_SIZE)
+	if (bmp_header->size != ((PIX_WIDTH * PIX_HEIGHT) * BYTES_PER_PIX) \
+		+ BMP_HEADERSIZE)
 		return (bmp_header_error(ERRBMP_SIZE, *offset, bmp_header->size));
 	*offset += ret;
 	if (read_reserved_bmp(fd, bmp_header, offset, file) != EXIT_SUCCESS)
@@ -72,7 +73,7 @@ static int	check_info_header(t_info_header *info_header)
 		return (info_header_error(ERRBMP_BBP, info_header->bits));
 	if (info_header->compression != 0)
 		return (info_header_error(ERRBMP_COMPR, info_header->compression));
-	if (info_header->imagesize < 0)//!= IMG_SIZE)
+	if (info_header->imagesize < 0)
 		return (info_header_error(ERRBMP_IMGSIZE, info_header->imagesize));
 	if (info_header->xresolution <= 0)
 		return (info_header_error(ERRBMP_XRES, info_header->xresolution));

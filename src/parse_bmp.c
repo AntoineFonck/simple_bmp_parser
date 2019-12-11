@@ -6,7 +6,7 @@
 /*   By: afonck <afonck@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/28 15:26:27 by afonck            #+#    #+#             */
-/*   Updated: 2019/10/29 15:08:43 by afonck           ###   ########.fr       */
+/*   Updated: 2019/12/11 17:23:28 by afonck           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,9 @@
 
 static int	read_pixel(int fd, int *pixel, int index)
 {
-	int		ret;
+	int				ret;
 	unsigned char	pixbuf[BYTES_PER_PIX];
-	//unsigned char	tmp;
 
-	//if ((ret = read(fd, pixel, BYTES_PER_PIX)) == -1)
 	if ((ret = read(fd, pixbuf, BYTES_PER_PIX)) == -1)
 	{
 		ft_dprintf(STDERR_FILENO, "read fail: %{r}s\n", strerror(errno));
@@ -31,19 +29,9 @@ static int	read_pixel(int fd, int *pixel, int index)
 		ft_dprintf(STDERR_FILENO, ERRBMP_EOF, index);
 		return (EXIT_FAILURE);
 	}
-	//*pixel = *((int *)pixbuf);
-	//ft_printf("pixbuf before = %04x\n", *((int *)pixbuf));
-	//ft_printf("pixel before = %04x\n", *pixel);
-	//ft_printf("pixbuf[0] %0x pixbuf[1] %0x pixbuf[2] %0x pixbuf[3] %0x before\n", pixbuf[0], pixbuf[1], pixbuf[2], pixbuf[3]);
-	//tmp = pixbuf[0];
-	//pixbuf[0] = pixbuf[2];
-	//pixbuf[2] = tmp;
 	if (BYTES_PER_PIX == 4)
 		pixbuf[BYTES_PER_PIX - 1] = 0x00;
 	*pixel = *((int *)pixbuf);
-	//ft_printf("pixbuf[0] %0x pixbuf[1] %0x pixbuf[2] %0x pixbuf[3] %0x after\n", pixbuf[0], pixbuf[1], pixbuf[2], pixbuf[3]);
-	//ft_printf("pixbuf after = %04x\n", *((int *)pixbuf));
-	//ft_printf("pixel after = %04x\n\n", *pixel);
 	return (EXIT_SUCCESS);
 }
 

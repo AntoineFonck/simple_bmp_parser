@@ -6,7 +6,7 @@
 /*   By: afonck <afonck@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/28 15:24:46 by afonck            #+#    #+#             */
-/*   Updated: 2019/10/28 16:31:31 by afonck           ###   ########.fr       */
+/*   Updated: 2019/12/11 17:21:38 by afonck           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,14 +15,24 @@
 
 # define PIX_WIDTH 128
 # define PIX_HEIGHT 128
-# define BITS_PER_PIX 32//24
+# define BITS_PER_PIX 32
 
-# define BMP_ID ('M' * 256) + 'B'
+/*
+** BMP ID --> ('M' * 256) + 'B'
+*/
+# define BMP_ID 19778
 # define OFFSET_BEFORE_DATA 54
 # define BMP_HEADERSIZE 54
-# define BYTES_PER_PIX BITS_PER_PIX / 8
-# define BMP_SIZE ((PIX_WIDTH * PIX_HEIGHT) * BYTES_PER_PIX) + BMP_HEADERSIZE
-# define IMG_SIZE ((PIX_WIDTH * PIX_HEIGHT) * BYTES_PER_PIX)
+
+/*
+** BYTES PER PIX --> BITS PER PIX / 8
+*/
+# define BYTES_PER_PIX 4
+
+/*
+** BMP_SIZE --> ((PIX_WIDTH * PIX_HEIGHT) * BYTES_PER_PIX) + BMP_HEADERSIZE
+** IMG_SIZE --> ((PIX_WIDTH * PIX_HEIGHT) * BYTES_PER_PIX)
+*/
 
 /*
 ** ERROR MESSAGES
