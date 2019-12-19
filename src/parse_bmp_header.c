@@ -45,9 +45,11 @@ int *offset)
 	*offset += ret;
 	if ((ret = read(fd, &bmp_header->size, 4)) <= 0)
 		return (bmpheader_readerror(ret, file));
+	/*
 	if (bmp_header->size != ((PIX_WIDTH * PIX_HEIGHT) * BYTES_PER_PIX) \
 		+ BMP_HEADERSIZE)
 		return (bmp_header_error(ERRBMP_SIZE, *offset, bmp_header->size));
+	*/
 	*offset += ret;
 	if (read_reserved_bmp(fd, bmp_header, offset, file) != EXIT_SUCCESS)
 		return (EXIT_FAILURE);
@@ -63,21 +65,27 @@ static int	check_info_header(t_info_header *info_header)
 {
 	if (info_header->size != 40)
 		return (info_header_error(ERRBMP_HDSIZE, info_header->size));
-	if (info_header->width != PIX_WIDTH)
+	/*if (info_header->width != PIX_WIDTH)
 		return (info_header_error(ERRBMP_W_IMG, info_header->width));
 	if (ft_absolute(info_header->height) != PIX_HEIGHT)
 		return (info_header_error(ERRBMP_H_IMG, info_header->height));
+	*/
+	if (info_header->height < 0)
+	{
+		ft_dprintf(STDERR_FILENO, "height is inversed\n");
+		return (1);
+	}
 	if (info_header->planes != 1)
 		return (info_header_error(ERRBMP_CLR_PLN, info_header->planes));
-	if (info_header->bits != BITS_PER_PIX)
+	if (info_header->bits != 24 && info_header->bits != 32)
 		return (info_header_error(ERRBMP_BBP, info_header->bits));
 	if (info_header->compression != 0)
 		return (info_header_error(ERRBMP_COMPR, info_header->compression));
 	if (info_header->imagesize < 0)
 		return (info_header_error(ERRBMP_IMGSIZE, info_header->imagesize));
-	if (info_header->xresolution <= 0)
+	if (info_header->xresolution < 0)
 		return (info_header_error(ERRBMP_XRES, info_header->xresolution));
-	if (info_header->yresolution <= 0)
+	if (info_header->yresolution < 0)
 		return (info_header_error(ERRBMP_YRES, info_header->yresolution));
 	if (info_header->ncolours != 0)
 		return (info_header_error(ERRBMP_NBCOLOR, info_header->ncolours));

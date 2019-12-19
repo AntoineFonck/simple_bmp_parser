@@ -13,9 +13,7 @@
 #ifndef LIBBMP_H
 # define LIBBMP_H
 
-# define PIX_WIDTH 128
-# define PIX_HEIGHT 128
-# define BITS_PER_PIX 32
+# include "SDL.h"
 
 /*
 ** BMP ID --> ('M' * 256) + 'B'
@@ -27,7 +25,6 @@
 /*
 ** BYTES PER PIX --> BITS PER PIX / 8
 */
-# define BYTES_PER_PIX 4
 
 /*
 ** BMP_SIZE --> ((PIX_WIDTH * PIX_HEIGHT) * BYTES_PER_PIX) + BMP_HEADERSIZE
@@ -84,6 +81,18 @@ typedef struct			s_info_header
 	unsigned int		importantcolours;
 }						t_info_header;
 
+typedef struct			s_headers
+{
+	t_bmp_header		bmp_header;
+	t_info_header		info_header;
+}						t_headers;
+
+typedef struct			s_bmpix
+{
+	SDL_Surface			*bmp_surf;
+	unsigned char		*pixeldata;
+}						t_bmpix;
+
 /*
 ** ERROR HANDLING FUNCTIONS
 */
@@ -114,14 +123,17 @@ char *file, int *offset);
 int						is_bmp(char *file);
 
 /*
-** FUNCTIONS TO USE
+** FUNCTIONS TO USE (load bmp to surf is the only solid one at the moment)
 */
 
-int						simpleparse_bmp(char *file, int *pixels);
-
-int						parse_bmp(char *file, t_bmp_header *bmp_header, \
-t_info_header *info_header, int *pixels);
-
-int						*parse_bmp_malloc(char *file, \
-t_bmp_header *bmp_header, t_info_header *info_header);
+SDL_Surface				*load_bmp(char *file);
+/*
+** int						simpleparse_bmp(char *file, int *pixels);
+**
+** int						parse_bmp(char *file, t_bmp_header *bmp_header, \
+** t_info_header *info_header, int *pixels);
+**
+** int						*parse_bmp_malloc(char *file, \
+** t_bmp_header *bmp_header, t_info_header *info_header);
+*/
 #endif

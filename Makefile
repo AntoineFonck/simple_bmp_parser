@@ -14,16 +14,18 @@ NAME		= libbmp.a
 
 CC = clang#gcc
 
-CFLAGS	= -Wall -Werror -Wextra
+CFLAGS	= -Wall -Werror -Wextra #-g
 
-LDFLAGS = -L$(LIBFT_DIR)
-LDLIBS = -lft
+LDFLAGS = -L$(LIBFT_DIR) -L$(SDL2_DIR)lib
+LDLIBS = -lft -lSDL2
 
-INCLUDES = -I$(LIBFT_DIR) -I$(INC_DIR)
+INCLUDES = -I$(LIBFT_DIR) -I$(SDL2_DIR)include/SDL2/ -I$(INC_DIR)
 
 CURRENT_DIR = $(shell pwd)
 
 LIBFT_DIR = $(CURRENT_DIR)/../libft/
+LIBFT = $(LIBFT_DIR)libft.a
+SDL2_DIR = $(CURRENT_DIR)/../sdl2_lib/
 LIBFT = $(LIBFT_DIR)libft.a
 #LIBFT_HEADER = $(LIBFT_DIR)libft.h
 
@@ -46,11 +48,14 @@ BMP_HEADERS = $(addprefix $(INC_DIR), $(HEADER_LIST))
 
 all: $(NAME)
 
-$(NAME): $(LIBFT) $(OBJ_DIR) $(BMP_OBJ)
+$(NAME): $(LIBFT) $(SDL2) $(OBJ_DIR) $(BMP_OBJ)
 	@ar rcs $(NAME) $(BMP_OBJ)
 
 $(LIBFT):
 	@echo "$(NAME): $(LIBFT) missing"
+
+$(SDL2):
+	@echo "$(NAME): $(SDL2) missing"
 
 $(OBJ_DIR):
 	@mkdir -p $(OBJ_DIR)
