@@ -19,12 +19,13 @@
 ** BMP ID --> ('M' * 256) + 'B'
 */
 # define BMP_ID 19778
-# define OFFSET_BEFORE_DATA 54
-# define BMP_HEADERSIZE 54
 
 /*
 ** BYTES PER PIX --> BITS PER PIX / 8
 */
+
+#define MAX_PIXW 2000
+#define MAX_PIXH 2000
 
 /*
 ** BMP_SIZE --> ((PIX_WIDTH * PIX_HEIGHT) * BYTES_PER_PIX) + BMP_HEADERSIZE
@@ -37,13 +38,13 @@
 # define ERRBMP_ID "file ID is %{r}d, it should be %{g}d\n"
 # define ERRBMP_SIZE "wrong size @ index %{b}d: %{r}d\n"
 # define ERRBMP_RES "two bytes @ offset %d should be 0, but are %{r}d\n"
-# define ERRBMP_OFFSET "offset to image data %{r}d @ index %{b}d wrong\n"
+# define ERRBMP_OFFSET "offset %{r}d @ index %{b}d: bmp type not supported\n"
 
-# define ERRBMP_HDSIZE "info header size: %{r}d, expected: 40\n"
+# define ERRBMP_HDSIZE "info header size: %{r}d, bmp type not supported\n"
 # define ERRBMP_W_IMG "width in header: %{r}d is wrong\n"
 # define ERRBMP_H_IMG "height in header: %{r}d is wrong\n"
 # define ERRBMP_CLR_PLN "format error, color planes: %d\n"
-# define ERRBMP_BBP "nb bits per pixel: %d, should be BITS_PER_PIX in header\n"
+# define ERRBMP_BBP "nb bits per pixel: %d, only 24 bpp and 32 bpp supported\n"
 # define ERRBMP_COMPR "compression: %{r}d, only uncompressed bmp are handled\n"
 # define ERRBMP_IMGSIZE "uncorrect image size: %{r}d\n"
 # define ERRBMP_XRES "uncorrect horizontal resolution: %{r}d pixels per meter\n"
@@ -85,12 +86,14 @@ typedef struct			s_headers
 {
 	t_bmp_header		bmp_header;
 	t_info_header		info_header;
+	int					inverse_h;
 }						t_headers;
 
 typedef struct			s_bmpix
 {
 	SDL_Surface			*bmp_surf;
 	unsigned char		*pixeldata;
+	int					error;
 }						t_bmpix;
 
 /*
@@ -114,7 +117,7 @@ int						fill_bmp_header(t_bmp_header *bmp_header, int fd, \
 char *file, int *offset);
 
 int						fill_info_header(t_info_header *info_header, int fd, \
-char *file, int *offset);
+int *inverse_h, int *offset);
 
 /*
 ** UTILS

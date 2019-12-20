@@ -13,7 +13,7 @@
 #include "libbmp.h"
 #include "libft.h"
 #include <errno.h>
-
+/*
 static int	read_pixel(int fd, int *pixel, int index)
 {
 	int				ret;
@@ -33,7 +33,7 @@ static int	read_pixel(int fd, int *pixel, int index)
 	*pixel = *((int *)pixbuf);
 	return (EXIT_SUCCESS);
 }
-
+*/
 void		add_bmp_pad(void *pixel_line, int pad)
 {
 	Uint8		padbyte;
@@ -46,6 +46,26 @@ void		add_bmp_pad(void *pixel_line, int pad)
 		ft_memcpy(pixel_line, &padbyte, 1);
 		++i;
 	}
+}
+
+static int	revfill_surfpix(SDL_Surface *surf, unsigned char *pixeldata)
+{
+	int			rowsize;
+	Uint8		*bits;
+    int			pad;
+
+	rowsize = surf->w * surf->format->BytesPerPixel;
+	bits = (Uint8 *) surf->pixels;
+	pad = ((rowsize % 4) ? (4 - (rowsize % 4)) : 0);
+    while (bits < (Uint8 *) surf->pixels + (surf->h * surf->pitch))
+	{
+		bits += surf->pitch;
+		ft_memcpy(bits, pixeldata, rowsize);
+        if (pad)
+			add_bmp_pad(bits + (rowsize - pad), pad);
+		pixeldata += rowsize;
+	}
+	return (0);
 }
 
 static int	fill_surfpix(SDL_Surface *surf, unsigned char *pixeldata)
@@ -67,7 +87,7 @@ static int	fill_surfpix(SDL_Surface *surf, unsigned char *pixeldata)
 	}
 	return (0);
 }
-
+/*
 static int	fill_pixels(int fd, int *pixels, int width, int height)
 {
 	
@@ -127,7 +147,7 @@ t_info_header *info_header, int *pixels)
 	}
 	if ((fill_bmp_header(bmp_header, fd, file, &offset)) != EXIT_SUCCESS)
 		return (parse_bmp_error(ERRBMP_RD_BMPHEADER, file));
-	if ((fill_info_header(info_header, fd, file, &offset)) != EXIT_SUCCESS)
+	if ((fill_info_header(info_header, fd, &headers->inverse_h, &offset)) != EXIT_SUCCESS)
 		return (parse_bmp_error(ERRBMP_RD_INFOHEADER, file));
 	if ((fill_pixels(fd, pixels, info_header->width, info_header->height)) != EXIT_SUCCESS)
 		return (parse_bmp_error(ERRBMP_RD_IMG, file));
@@ -152,7 +172,7 @@ t_info_header *info_header)
 	}
 	if ((fill_bmp_header(bmp_header, fd, file, &offset)) != EXIT_SUCCESS)
 		return (parse_mallocbmp_error(ERRBMP_RD_BMPHEADER, file));
-	if ((fill_info_header(info_header, fd, file, &offset)) != EXIT_SUCCESS)
+	if ((fill_info_header(info_header, fd, &headers->inverse_h, &offset)) != EXIT_SUCCESS)
 		return (parse_mallocbmp_error(ERRBMP_RD_INFOHEADER, file));
 	if ((pixels = (int *)malloc(sizeof(char) * (info_header->width * \
 	info_header->height * (info_header->bits / 8)))) == NULL)
@@ -161,7 +181,7 @@ t_info_header *info_header)
 		return (parse_mallocbmp_error(ERRBMP_RD_IMG, file));
 	return (pixels);
 }
-
+*/
 void			print_bmpheader(t_bmp_header *bmp_header)
 {
 	ft_printf("***	BMP HEADER	***\n");
@@ -188,6 +208,30 @@ void			print_infoheader(t_info_header *info_header)
 	ft_printf("important colors: %u\n", info_header->importantcolours);
 }
 
+int				fill_rest(int fd, int offset)
+{
+	unsigned char	v4_rest[68];
+	unsigned char	v5_rest[84];
+
+	if (offset == 122)
+	{
+		if ((read(fd, v4_rest, 68)) <= 0)
+		{
+			ft_dprintf(STDERR_FILENO, "error or unexpected EOF\n");
+			return (1);
+		}
+	}
+	else if (offset == 138)
+	{
+		if ((read(fd, v5_rest, 84)) <= 0)
+		{
+			ft_dprintf(STDERR_FILENO, "error or unexpected EOF\n");
+			return (1);
+		}
+	}
+	return (0);
+}
+
 SDL_Surface		*load_bmp(char *file)
 {
 	t_bmpix			bmpix;
@@ -198,7 +242,8 @@ SDL_Surface		*load_bmp(char *file)
 	bmpix.bmp_surf = NULL;
 	bmpix.pixeldata = NULL;
 	offset = 0;
-	if ((is_bmp(file)) != 1)
+	bmpix.error = 0;
+	if ((is_bmp(file)) != 1 || !file)
 		return (NULL);
 	if ((fd = open(file, O_RDONLY | O_NOFOLLOW)) == -1)
 	{
@@ -207,7 +252,9 @@ SDL_Surface		*load_bmp(char *file)
 	}
 	if ((fill_bmp_header(&headers.bmp_header, fd, file, &offset)) != EXIT_SUCCESS)
 		return (NULL);
-	if ((fill_info_header(&headers.info_header, fd, file, &offset)) != EXIT_SUCCESS)
+	if ((fill_info_header(&headers.info_header, fd, &headers.inverse_h, &offset)) != EXIT_SUCCESS)
+		return (NULL);
+	if ((fill_rest(fd, headers.bmp_header.offset)) != 0)
 		return (NULL);
 	if ((bmpix.bmp_surf = SDL_CreateRGBSurface(0, headers.info_header.width, headers.info_header.height, headers.info_header.bits, 0, 0, 0, 0)) == NULL)
 	{
@@ -215,17 +262,23 @@ SDL_Surface		*load_bmp(char *file)
 		return(NULL);
 	}
 	if ((bmpix.pixeldata = (unsigned char *)malloc(bmpix.bmp_surf->h * bmpix.bmp_surf->pitch)) == NULL)
-		return (NULL);
-	if ((read(fd, bmpix.pixeldata, bmpix.bmp_surf->h * bmpix.bmp_surf->pitch)) <= 0)
+		bmpix.error = 1;
+	if (bmpix.error == 1 || (read(fd, bmpix.pixeldata, bmpix.bmp_surf->h * bmpix.bmp_surf->pitch)) <= 0)
+		bmpix.error = 1;
+	if (headers.inverse_h == 1)
 	{
-		free(bmpix.pixeldata);
-		ft_printf("error while reading pixeldata\n");
-		bmpix.pixeldata = NULL;
-		return (NULL);
+		if (bmpix.error == 1 || (revfill_surfpix(bmpix.bmp_surf, bmpix.pixeldata)) != EXIT_SUCCESS)
+			bmpix.error = 1;
 	}
-	if ((fill_surfpix(bmpix.bmp_surf, bmpix.pixeldata)) != EXIT_SUCCESS)
-		return (NULL);
+	else if (bmpix.error == 1 || (fill_surfpix(bmpix.bmp_surf, bmpix.pixeldata)) != EXIT_SUCCESS)
+		bmpix.error = 1;
 	free(bmpix.pixeldata);
 	bmpix.pixeldata = NULL;
-	return (bmpix.bmp_surf);
+	if (bmpix.error == 1)
+	{
+		ft_dprintf(STDERR_FILENO, "error during bmp loading\n");
+		SDL_FreeSurface(bmpix.bmp_surf);
+		bmpix.bmp_surf = NULL;
+	}
+	return (bmpix.error != 0 ? NULL : bmpix.bmp_surf);
 }

@@ -55,25 +55,27 @@ int *offset)
 		return (EXIT_FAILURE);
 	if ((ret = read(fd, &bmp_header->offset, 4)) <= 0)
 		return (bmpheader_readerror(ret, file));
-	if (bmp_header->offset != OFFSET_BEFORE_DATA)
+	if (bmp_header->offset != 54 && bmp_header->offset != 122 \
+		&& bmp_header->offset != 138)
 		return (bmp_header_error(ERRBMP_OFFSET, bmp_header->offset, *offset));
 	*offset += ret;
 	return (EXIT_SUCCESS);
 }
 
-static int	check_info_header(t_info_header *info_header)
+static int	check_info_header(t_info_header *info_header, int *inverse_h)
 {
-	if (info_header->size != 40)
+	if (info_header->size != 40 && info_header->size != 108 \
+		&& info_header->size != 124)
 		return (info_header_error(ERRBMP_HDSIZE, info_header->size));
-	/*if (info_header->width != PIX_WIDTH)
+	if (info_header->width <= 0 || info_header->width > MAX_PIXW)
 		return (info_header_error(ERRBMP_W_IMG, info_header->width));
-	if (ft_absolute(info_header->height) != PIX_HEIGHT)
+	if (info_header->height == 0 || info_header->height > MAX_PIXH)
 		return (info_header_error(ERRBMP_H_IMG, info_header->height));
-	*/
 	if (info_header->height < 0)
 	{
 		ft_dprintf(STDERR_FILENO, "height is inversed\n");
-		return (1);
+		*inverse_h = 1;
+		info_header->height = -info_header->height;
 	}
 	if (info_header->planes != 1)
 		return (info_header_error(ERRBMP_CLR_PLN, info_header->planes));
@@ -95,10 +97,11 @@ static int	check_info_header(t_info_header *info_header)
 }
 
 int			fill_info_header(t_info_header *info_header, int fd, \
-char *file, int *offset)
+int *inverse_h, int *offset)
 {
 	int ret;
 
+	*inverse_h = 0;
 	if ((ret = read(fd, info_header, sizeof(t_info_header))) == -1)
 	{
 		ft_dprintf(STDERR_FILENO, "read fail: %{r}s\n", strerror(errno));
@@ -106,11 +109,11 @@ char *file, int *offset)
 	}
 	else if (ret == 0)
 	{
-		ft_dprintf(STDERR_FILENO, "unexpected end of file in %{r}s\n", file);
+		ft_dprintf(STDERR_FILENO, "unexpected end of file in info header\n");
 		return (EXIT_FAILURE);
 	}
 	*offset += sizeof(t_info_header);
-	if (check_info_header(info_header) != EXIT_SUCCESS)
+	if (check_info_header(info_header, inverse_h) != EXIT_SUCCESS)
 		return (EXIT_FAILURE);
 	return (EXIT_SUCCESS);
 }
