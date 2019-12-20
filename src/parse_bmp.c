@@ -62,8 +62,8 @@ static int	revfill_surfpix(SDL_Surface *surf, unsigned char *pixeldata)
 		bits += surf->pitch;
 		ft_memcpy(bits, pixeldata, rowsize);
         if (pad)
-			add_bmp_pad(bits + (rowsize - pad), pad);
-		pixeldata += rowsize;
+			add_bmp_pad(bits + rowsize, pad);
+		pixeldata += surf->pitch;
 	}
 	return (0);
 }
@@ -82,8 +82,8 @@ static int	fill_surfpix(SDL_Surface *surf, unsigned char *pixeldata)
 		bits -= surf->pitch;
 		ft_memcpy(bits, pixeldata, rowsize);
         if (pad)
-			add_bmp_pad(bits + (rowsize - pad), pad);
-		pixeldata += rowsize;
+			add_bmp_pad(bits + rowsize, pad);
+		pixeldata += surf->pitch;
 	}
 	return (0);
 }
