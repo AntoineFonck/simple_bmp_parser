@@ -6,7 +6,7 @@
 /*   By: afonck <afonck@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/28 15:24:46 by afonck            #+#    #+#             */
-/*   Updated: 2019/12/11 17:21:38 by afonck           ###   ########.fr       */
+/*   Updated: 2020/01/27 16:14:39 by afonck           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@
 ** BYTES PER PIX --> BITS PER PIX / 8
 */
 
-#define MAX_PIXW 2000
-#define MAX_PIXH 2000
+# define MAX_PIXW 2000
+# define MAX_PIXH 2000
 
 /*
 ** BMP_SIZE --> ((PIX_WIDTH * PIX_HEIGHT) * BYTES_PER_PIX) + BMP_HEADERSIZE
@@ -124,6 +124,16 @@ int *inverse_h, int *offset);
 */
 
 int						is_bmp(char *file);
+
+/*
+** FILL PIX DATA BUFFER
+*/
+
+int						fill_surfpix(SDL_Surface *surf, \
+unsigned char *pixeldata);
+
+int						revfill_surfpix(SDL_Surface *surf, \
+unsigned char *pixeldata);
 
 /*
 ** FUNCTIONS TO USE (load bmp to surf is the only solid one at the moment)

@@ -6,7 +6,7 @@
 #    By: afonck <afonck@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/11/07 18:55:30 by afonck            #+#    #+#              #
-#    Updated: 2019/10/27 12:41:04 by afonck           ###   ########.fr        #
+#    Updated: 2020/01/27 17:01:26 by afonck           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,8 +36,10 @@ OBJ_LIST = $(SRC_LIST:.c=.o)
 
 SRC_LIST = parse_bmp.c \
 			parse_bmp_header.c \
+			fill_bmpsurf_pix.c \
 			error_bmp.c \
-			utils.c
+			utils.c \
+			print_headers.c
 HEADER_LIST = libbmp.h
 
 BMP_SRC = $(addprefix $(SRC_DIR), $(SRC_LIST))
