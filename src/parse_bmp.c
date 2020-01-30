@@ -6,7 +6,7 @@
 /*   By: afonck <afonck@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/28 15:26:27 by afonck            #+#    #+#             */
-/*   Updated: 2020/01/27 17:35:49 by afonck           ###   ########.fr       */
+/*   Updated: 2020/01/30 14:55:26 by afonck           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,19 @@ static int		init_load_bmp(char *file, int *fd, t_bmpix *bmpix, int *offset)
 	return (EXIT_SUCCESS);
 }
 
+static void		*cleanup(int fd, char *file)
+{
+	if (close(fd) != 0)
+	{
+		if (file != NULL)
+			ft_dprintf(STDERR_FILENO, "failed to close \
+			%{r}s\n", file);
+		else
+			ft_dprintf(STDERR_FILENO, "failed to close NULL file\n");
+	}
+	return (NULL);
+}
+
 SDL_Surface		*load_bmp(char *file)
 {
 	t_bmpix			bmpix;
@@ -93,18 +106,19 @@ SDL_Surface		*load_bmp(char *file)
 		return (NULL);
 	if ((fill_bmp_header(&headers.bmp_header, fd, file, \
 	&offset)) != EXIT_SUCCESS)
-		return (NULL);
+		return (cleanup(fd, file));
 	if ((fill_info_header(&headers.info_header, fd, &headers.inverse_h, \
 	&offset)) != EXIT_SUCCESS)
-		return (NULL);
+		return (cleanup(fd, file));
 	if ((fill_rest(fd, headers.bmp_header.offset)) != 0)
-		return (NULL);
+		return (cleanup(fd, file));
 	if ((bmpix.bmp_surf = SDL_CreateRGBSurface(0, headers.info_header.width, \
 	headers.info_header.height, headers.info_header.bits, 0, 0, 0, 0)) == NULL)
 	{
 		ft_dprintf(STDERR_FILENO, "SDL error %{r}s\n", SDL_GetError());
-		return (NULL);
+		return (cleanup(fd, file));
 	}
 	actual_load_bmp(&bmpix, &headers, fd);
+	cleanup(fd, file);
 	return (bmpix.error != 0 ? NULL : bmpix.bmp_surf);
 }
