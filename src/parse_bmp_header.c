@@ -6,7 +6,7 @@
 /*   By: afonck <afonck@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/28 15:26:06 by afonck            #+#    #+#             */
-/*   Updated: 2020/01/27 16:03:15 by afonck           ###   ########.fr       */
+/*   Updated: 2020/01/31 14:48:31 by afonck           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,12 @@ char *file)
 	int ret;
 
 	ret = 0;
-	if ((ret = read(fd, &bmp_header->reserved1, 2)) <= 0)
+	if ((ret = read(fd, &bmp_header->reserved1, 2)) != 2)
 		return (bmpheader_readerror(ret, file));
 	if (bmp_header->reserved1 != 0)
 		return (bmp_header_error(ERRBMP_RES, *offset, bmp_header->reserved1));
 	*offset += ret;
-	if ((ret = read(fd, &bmp_header->reserved2, 2)) <= 0)
+	if ((ret = read(fd, &bmp_header->reserved2, 2)) != 2)
 		return (bmpheader_readerror(ret, file));
 	if (bmp_header->reserved2 != 0)
 		return (bmp_header_error(ERRBMP_RES, *offset, bmp_header->reserved2));
@@ -38,17 +38,17 @@ int *offset)
 {
 	int ret;
 
-	if ((ret = read(fd, &bmp_header->type, 2)) <= 0)
+	if ((ret = read(fd, &bmp_header->type, 2)) != 2)
 		return (bmpheader_readerror(ret, file));
 	if (bmp_header->type != 0x4d42)
 		return (bmp_header_error(ERRBMP_ID, bmp_header->type, BMP_ID));
 	*offset += ret;
-	if ((ret = read(fd, &bmp_header->size, 4)) <= 0)
+	if ((ret = read(fd, &bmp_header->size, 4)) != 4)
 		return (bmpheader_readerror(ret, file));
 	*offset += ret;
 	if (read_reserved_bmp(fd, bmp_header, offset, file) != EXIT_SUCCESS)
 		return (EXIT_FAILURE);
-	if ((ret = read(fd, &bmp_header->offset, 4)) <= 0)
+	if ((ret = read(fd, &bmp_header->offset, 4)) != 4)
 		return (bmpheader_readerror(ret, file));
 	if (bmp_header->offset != 54 && bmp_header->offset != 122 \
 		&& bmp_header->offset != 138)
@@ -104,7 +104,8 @@ int *inverse_h, int *offset)
 	int ret;
 
 	*inverse_h = 0;
-	if ((ret = read(fd, info_header, sizeof(t_info_header))) == -1)
+	if ((ret = read(fd, info_header, sizeof(t_info_header))) \
+	!= sizeof(t_info_header))
 	{
 		ft_dprintf(STDERR_FILENO, "read fail: %{r}s\n", strerror(errno));
 		return (EXIT_FAILURE);

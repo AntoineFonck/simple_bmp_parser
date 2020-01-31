@@ -6,7 +6,7 @@
 /*   By: afonck <afonck@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/28 15:26:27 by afonck            #+#    #+#             */
-/*   Updated: 2020/01/30 14:55:26 by afonck           ###   ########.fr       */
+/*   Updated: 2020/01/31 14:49:20 by afonck           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int				fill_rest(int fd, int offset)
 
 	if (offset == 122)
 	{
-		if ((read(fd, v4_rest, 68)) <= 0)
+		if ((read(fd, v4_rest, 68)) != 68)
 		{
 			ft_dprintf(STDERR_FILENO, "error or unexpected EOF\n");
 			return (1);
@@ -29,7 +29,7 @@ int				fill_rest(int fd, int offset)
 	}
 	else if (offset == 138)
 	{
-		if ((read(fd, v5_rest, 84)) <= 0)
+		if ((read(fd, v5_rest, 84)) != 84)
 		{
 			ft_dprintf(STDERR_FILENO, "error or unexpected EOF\n");
 			return (1);
@@ -44,7 +44,7 @@ static int		actual_load_bmp(t_bmpix *bmpix, t_headers *headers, int fd)
 	* bmpix->bmp_surf->pitch)) == NULL)
 		bmpix->error = 1;
 	if (bmpix->error == 1 || (read(fd, bmpix->pixeldata, bmpix->bmp_surf->h \
-	* bmpix->bmp_surf->pitch)) <= 0)
+	* bmpix->bmp_surf->pitch)) != bmpix->bmp_surf->h * bmpix->bmp_surf->pitch)
 		bmpix->error = 1;
 	if (headers->inverse_h == 1)
 	{
